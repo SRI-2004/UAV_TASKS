@@ -1,7 +1,6 @@
 import cv2
-import matplotlib.pyplot as mpl
 import numpy as np
-import time
+
 
 cap = cv2.VideoCapture(0)
 while True:
