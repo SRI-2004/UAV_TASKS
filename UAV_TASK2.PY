@@ -47,9 +47,10 @@ while (True):
         ## Draw rect
         font = cv2.FONT_HERSHEY_COMPLEX
         cv2.rectangle(dst, (x, y), (x + w, y + h), (255, 0, 0), 1, 16)
+        yp = y
         px = height / h
         y = px * w
-        cv2.putText(dst, str(y), (300, 300), font, 1, (255,255,255), 1, cv2.LINE_AA)
+        cv2.putText(dst, str(y), (x,yp), font, 1, (255,255,255), 1, cv2.LINE_AA)
 
         ## backup
         bboxes.append(bbox)
