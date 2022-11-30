@@ -1,0 +1,80 @@
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
+height=int(input("Enter height:"))
+cap = cv2.VideoCapture(1)   
+while(True):
+    ret, frame = cap.read()
+    
+    hsv=cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
+    lwr=np.array([150,180,20])
+    upr=np.array([255,255,150])
+    #mask=cv2.inRange(hsv,lwr,upr)
+    #setting all values of non red h as 0
+    h,s,v=cv2.split(hsv)
+    h[h>180]=0
+    h[h<150]=0
+
+    normed = cv2.normalize(h, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8UC1)
+    kernel = cv2.getStructuringElement(shape=cv2.MORPH_ELLIPSE, ksize=(3,3))
+    opened = cv2.morphologyEx(normed, cv2.MORPH_OPEN, kernel)
+    
+    #redseg=cv2.bitwise_and(frame,frame,mask=h)
+    #redseg=cv2.medianBlur(redseg,15)
+
+    #detecting edges with threshold 1 and 2
+    #canny=cv2.Canny(redseg,125,175)
+
+
+
+    #finding contours and taking contours from output
+    items = cv2.findContours(opened, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    contours = items[0] if len(items) == 2 else items[1]
+
+    bboxes = []
+    rboxes = []
+    cnts = []
+
+    #making a destination frame on which rectangle will be drawn
+    dst = frame.copy()
+
+    for cnt in contours:
+        ## Get the stright bounding rect
+        bbox = cv2.boundingRect(cnt)
+        x,y,w,h = bbox
+        if w<60 or h < 60 or w*h <2750  or w > 500:
+            continue
+
+        ## Draw rect
+        font=cv2.FONT_HERSHEY_COMPLEX
+        cv2.rectangle(dst, (x,y), (x+w,y+h), (255,0,0), 1, 16)
+        px=height/h
+        y=px*w
+        cv2.putText(dst,str(y),(300,300),font,1,(0,0,0),1,cv2.LINE_AA)
+
+
+       
+
+        ## backup 
+        bboxes.append(bbox)
+        
+        cnts.append(cnt)
+
+    
+    #cv2.imshow("redframe",redseg)
+    #cv2.imshow("og",frame)
+    
+    #cv2.imshow("canny",canny)
+    cv2.imshow("op",dst)
+    #cv2.imshow("norm",normed)
+    
+    
+    
+    
+    
+    if cv2.waitKey(1) & 0xFF == ord('/'):
+        break
+
+cap.release() 
+cv2.destroyAllWindows()
