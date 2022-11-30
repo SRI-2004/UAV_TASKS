@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 height = int(input("Enter height:"))
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 while (True):
     ret, frame = cap.read()
 
